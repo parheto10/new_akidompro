@@ -6,8 +6,11 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Validation from "../../../Validation";
 
-const baseUrl = "http://127.0.0.1:8000/api"; 
-function ParcListInf4ha(){
+import BaseUrl from "../../../config/baseUrl";
+
+// const baseUrl = 'http://127.0.0.1:8000/api';
+const url = BaseUrl();
+function ParcListSup4ha(){
     const {coopID} = useParams();
     const navigate = useNavigate();
     const [cooperative,setCooperative] = useState([]);
@@ -45,18 +48,18 @@ function ParcListInf4ha(){
         if(coopID){
             try {
 
-                axios.get(baseUrl+'/cooperative-list/?coopID='+coopID).then((resp)=>{
+                axios.get(url+'/cooperative-list/?coopID='+coopID).then((resp)=>{
                     setCooperative(resp.data[0]);
                 });
-                axios.get(baseUrl+'/culture-list/?coopID='+coopID).then((resp)=>{
+                axios.get(url+'/culture-list/?coopID='+coopID).then((resp)=>{
                   setCulutres(resp.data);
                 })
   
-                axios.get(baseUrl+'/mode-acquisition-list/').then((resp)=>{
+                axios.get(url+'/mode-acquisition-list/').then((resp)=>{
                   setModeAcquisitions(resp.data);
                 });
 
-                axios.get(baseUrl+'/certification-list/').then((resp)=>{
+                axios.get(url+'/certification-list/').then((resp)=>{
                   setCertifications(resp.data);
                 });
             } catch (error) {
@@ -70,7 +73,7 @@ function ParcListInf4ha(){
      
       try {
         if(cooperative && cooperative.projet?.id){
-          axios.get(baseUrl+'/campagne-proj-list/?projId='+cooperative.projet?.id).then((resp)=>{
+          axios.get(url+'/campagne-proj-list/?projId='+cooperative.projet?.id).then((resp)=>{
             setCampagneList(resp.data);
           });
 
@@ -84,13 +87,14 @@ function ParcListInf4ha(){
   },[functAnneeList(),cooperative]) 
 
     const fetchData = () => {
-        axios.get(baseUrl+'/parcelles-list-inf-4ha/?coopID='+coopID)
+        axios.get(url+'/parcelles-list-sup-4ha/?coopID='+coopID)
           .then((resp) => {
             setnextUrl(resp.data.next);
             setprevUrl(resp.data.previous)
             setParcelleList(resp.data.results);
             setTotalPages(resp.data.count / resp.data.results.length);
             setTotalParc(resp.data.count)
+            console.log(resp.data.count)
           })
           .catch((error) => {
             console.error(error);
@@ -117,7 +121,7 @@ function ParcListInf4ha(){
 
     const onSearchParcelle=(event)=>{
         try {
-          axios.get(baseUrl+'/parcelles-list-inf-4ha/?q='+event.target.value+'&co='+coopID).then((resp)=>{
+          axios.get(url+'/parcelles-list-sup-4ha/?q='+event.target.value+'&co='+coopID).then((resp)=>{
             
             setParcelleList(resp.data.results);
           });
@@ -147,7 +151,7 @@ function ParcListInf4ha(){
         }).then((result) => {
           if (result.isConfirmed) {
             try {
-              axios.get(baseUrl+'/parcelles-list/?code='+Code+'&coop='+coopID).then((resp)=>{
+              axios.get(url+'/parcelles-list/?code='+Code+'&coop='+coopID).then((resp)=>{
 
                 setParcelleList(resp.data.results);
                 setTotalPages(resp.data.count / resp.data.results.length);
@@ -174,7 +178,7 @@ function ParcListInf4ha(){
 
     const modalOpenParc=(code)=>{
       window.$(`#addEventModalParc-${code}`).modal("show");
-      axios.get(baseUrl+'/parcelles-list/?parcId='+code).then((resp)=>{
+      axios.get(url+'/parcelles-list/?parcId='+code).then((resp)=>{
         setParcEdit(resp.data.results[0]);
 
         setParcelleData({
@@ -232,7 +236,7 @@ function ParcListInf4ha(){
         });
   
           try {
-          axios.post(baseUrl+'/update-coop-parcelle/',_formData).then((resp)=>{
+          axios.post(url+'/update-coop-parcelle/',_formData).then((resp)=>{
             Swal.close()
   
             if(resp.data.bool)
@@ -247,7 +251,7 @@ function ParcListInf4ha(){
                 confirmButtonText: 'OK'
               }).then((result) => {
                 if (result.isConfirmed) {
-                  axios.get(baseUrl+'/parcelles-list/?coopID='+coopID).then((resp)=>{
+                  axios.get(url+'/parcelles-list/?coopID='+coopID).then((resp)=>{
                     setnextUrl(resp.data.next);
                     setprevUrl(resp.data.previous)
                     setParcelleList(resp.data.results);
@@ -309,7 +313,7 @@ function ParcListInf4ha(){
      e.preventDefault()
 
      try {
-       axios.get(baseUrl+'/export-parcelle-cooperative/?format='+format_exp+'&campagne='+campagne_exp+'&coopID='+coopID,
+       axios.get(url+'/export-parcelle-cooperative/?format='+format_exp+'&campagne='+campagne_exp+'&coopID='+coopID,
          {responseType:'blob'}
        ).then((response)=>{
            if (format_exp == 'PDF'){
@@ -333,32 +337,71 @@ function ParcListInf4ha(){
     return(
         <Fragment>
             <Content sideID={"cooperatives"} parent={"generalite"}>
-            <h2 className="text-bold text-1100 mb-5">Liste des Parcelles Inférieur à 4ha ({totalParc})</h2>
-            <div className="mb-5 bg-white p-3 border-2 rounded-2 " >
-            </div>
-              <div id="members" >
-                <div className="row align-items-center justify-content-between g-3 mb-4">
-                  <div className="col col-auto">
-                    <div className="search-box">
-                      <div className="position-relative" data-bs-toggle="search" data-bs-display="static">
-                          <input className="form-control search-input search" type="search" placeholder="Recherche une parcelle" aria-label="Search"  onChange={onSearchParcelle} />
-                        <span className="fas fa-search search-box-icon"></span>
-                      </div>
+            <h2 className="text-bold text-1100 mb-5">Liste des Parcelles Supérieur à 4ha ({totalParc})</h2>
+                <div className="mb-5 bg-white p-3 border-2 rounded-2 ">
+                <div className="row">
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-info text-white p-2 text-center">
+                                    Parcelles Sup 4ha
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-warning"><Link
+                                        to={`/coops/parcelles-list-sup-4ha-non-mapper/${coopID}/`}>Non Mappées</Link></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-success text-white p-2 text-center">
+                                    Nb Parcelles Supérieur à (4Ha)
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-success">{totalParc}</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-info text-white p-2 text-center">
+                                    Superficie totale Parcelles Supérieur à (4Ha)
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-warning">{cooperative.sumSuperficieSup4ha?.total.toFixed(2)}</h3>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                  <div className="col-auto">
-                    <div className="d-flex align-items-center">
-                        <button className="btn btn-link text-900 me-4 px-0" data-bs-toggle="modal" data-bs-target="#exampleModal" ><span className="fa-solid fa-file-export fs--1 me-2"></span>Export</button>
-                        {/*<button className="btn btn-primary btn-sm" type="button"  onClick={()=>modalOpenParc()}>*/}
-                        {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
-                        {/*  Ajouter une parcelle*/}
-                        {/*</button>*/}
-                        <Link className="btn btn-primary btn-sm" to={`/coops/producteur-list/${coopID}/`} >
-                          <span className="fas fa-plus pe-2 fs--2"></span>
-                          Ajouter une parcelle
-                        </Link>
-                    </div>
-                  </div>
+                </div>
+                <div id="members">
+                    <div className="row align-items-center justify-content-between g-3 mb-4">
+                        <div className="col col-auto">
+                            <div className="search-box">
+                                <div className="position-relative" data-bs-toggle="search" data-bs-display="static">
+                                    <input className="form-control search-input search" type="search"
+                                           placeholder="Recherche une parcelle" aria-label="Search"
+                                           onChange={onSearchParcelle}/>
+                                    <span className="fas fa-search search-box-icon"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-auto">
+                            <div className="d-flex align-items-center">
+                                <button className="btn btn-link text-900 me-4 px-0" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"><span
+                                    className="fa-solid fa-file-export fs--1 me-2"></span>Export
+                                </button>
+                                {/*<button className="btn btn-primary btn-sm" type="button"  onClick={()=>modalOpenParc()}>*/}
+                                {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
+                                {/*  Ajouter une parcelle*/}
+                                {/*</button>*/}
+                                {/*<Link className="btn btn-primary btn-sm" to={`/coops/producteur-list/${coopID}/`} >*/}
+                                {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
+                                {/*  Ajouter une parcelle*/}
+                                {/*</Link>*/}
+                            </div>
+                        </div>
                 </div>
                 <div className="mx-n4 mx-lg-n6 px-4 px-lg-6 mb-9 bg-white border-y border-300 mt-2 position-relative top-1">
                   <div className="table-responsive scrollbar ms-n1 ps-1">
@@ -370,8 +413,8 @@ function ParcListInf4ha(){
                               <th className="sort align-middle pe-6 text-uppercase " scope="col" data-sort="amount" >Producteur</th>
                               <th className="sort align-middle pe-6 text-uppercase " scope="col" data-sort="amount" >Section</th>
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="stage" >Campagne</th>
-                              <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="probability" >Certification</th>
-                              <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="probability" >Code Certificat</th>
+                              {/* <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="probability" >Certification</th>
+                              <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="probability" >Code Certificat</th> */}
                               <th className="sort align-middle ps-0 text-center text-uppercase" scope="col" data-sort="date" >Latitude</th>
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Longitude</th>
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Culture</th>
@@ -402,8 +445,8 @@ function ParcListInf4ha(){
 
                                   <td className="description align-middle white-space-nowrap fw-bold text-700 py-2 pe-6">{parc.producteur?.section?.libelle}</td>
                                   <td className="description align-middle white-space-nowrap text-center fw-bold text-700 py-2 pe-6">{parc.campagne?.libelle}</td>
-                                  <td className="create_date text-end align-middle white-space-nowrap text-900 py-2 text-center">{parc.code_certif ? <b className="text-success">CERTIFIE</b> : <b className="text-danger"></b>}</td>
-                                  <td className="create_by align-middle white-space-nowrap fw-semi-bold text-1000 text-center"><b className="text-success">{parc.code_certif}</b></td>
+                                  {/* <td className="create_date text-end align-middle white-space-nowrap text-900 py-2 text-center">{parc.code_certif ? <b className="text-success">CERTIFIE</b> : <b className="text-danger"></b>}</td>
+                                  <td className="create_by align-middle white-space-nowrap fw-semi-bold text-1000 text-center"><b className="text-success">{parc.code_certif}</b></td> */}
                                   <td className="create_by align-middle white-space-nowrap fw-semi-bold text-1000 text-center">{parc.latitude}</td>
                                   <td className="last_activity align-middle text-center py-2">
                                     <span className="fw-bold fs--1 text-900">{parc.longitude}</span>
@@ -617,4 +660,4 @@ function ParcListInf4ha(){
     )
 }
 
-export default ParcListInf4ha;
+export default ParcListSup4ha;

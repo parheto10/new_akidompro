@@ -1,0 +1,18 @@
+{
+"type": "FeatureCollection",
+"name": "AGRIAL_infrastructure",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "SECTION": "BELLE VILLE", "POINT": "HOPITAL BELLE VILLE", "LATITUDES": "6.852328", "LONGITUDES": "-6.876646" }, "geometry": { "type": "Point", "coordinates": [ -6.876646, 6.852328 ] } },
+{ "type": "Feature", "properties": { "SECTION": "BELLE VILLE", "POINT": "ECOLE BELLE VILLE", "LATITUDES": "6.879692", "LONGITUDES": "-6.849829" }, "geometry": { "type": "Point", "coordinates": [ -6.849829, 6.879692 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GADOUAN", "POINT": "HOPITAL GADOUAN", "LATITUDES": "6.674113", "LONGITUDES": "-6.155339" }, "geometry": { "type": "Point", "coordinates": [ -6.155339, 6.674113 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GADOUAN", "POINT": "ECOLE GADOUAN", "LATITUDES": "6.674020", "LONGITUDES": "-6.879692" }, "geometry": { "type": "Point", "coordinates": [ -6.879692, 6.67402 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GUIPRY", "POINT": "HOPITAL GUIPRY", "LATITUDES": "6.793769", "LONGITUDES": "-6.235370" }, "geometry": { "type": "Point", "coordinates": [ -6.23537, 6.793769 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GUIPRY", "POINT": "ECOLE GUIPRY", "LATITUDES": "6.794839", "LONGITUDES": "-6.240530" }, "geometry": { "type": "Point", "coordinates": [ -6.24053, 6.794839 ] } },
+{ "type": "Feature", "properties": { "SECTION": "NIAMAYO", "POINT": "ECOLE NIAMAYO", "LATITUDES": "6.647086", "LONGITUDES": "-6.189257" }, "geometry": { "type": "Point", "coordinates": [ -6.189257, 6.647086 ] } },
+{ "type": "Feature", "properties": { "SECTION": "ZAGORETA", "POINT": "ECOLE ZAGORETA", "LATITUDES": "6.679326", "LONGITUDES": "-6.164396" }, "geometry": { "type": "Point", "coordinates": [ -6.164396, 6.679326 ] } },
+{ "type": "Feature", "properties": { "SECTION": "KAMBRESSO", "POINT": "ECOLE KAMBRESSO", "LATITUDES": "6.724321", "LONGITUDES": "-6.215406" }, "geometry": { "type": "Point", "coordinates": [ -6.215406, 6.724321 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GBIEGUHE", "POINT": "ECOLE GBIEGUHE", "LATITUDES": "6.7173513", "LONGITUDES": "-6.5846287" }, "geometry": { "type": "Point", "coordinates": [ -6.5846287, 6.7173513 ] } },
+{ "type": "Feature", "properties": { "SECTION": "GBIEGUHE", "POINT": "HOPITAL GBIEGUHE", "LATITUDES": "6.7553933", "LONGITUDES": "-6.5795967" }, "geometry": { "type": "Point", "coordinates": [ -6.5795967, 6.7553933 ] } }
+]
+}

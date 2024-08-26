@@ -1,0 +1,232 @@
+{
+    
+    "Tableau de bord": "Dashboard",
+    "ADMINISTRATION": "ADMINISTRATION",
+    "Profil": "Profile",
+    "Coopératives": "Coopératives",
+    "Géoportail planting": "Geoportal planting",
+    "RDUE": "EUDR",
+    "Géoportail RDUE": "EUDR Geoportal",
+    "PARAMETRES": "PARAMETERS",
+    "Campagnes": "Campaigns",
+    "DECRETS AGROFORETS": "AGROFORETS DECREES",
+    "Décret rapide grah": "Décret rapide grah",
+    "Décret haute dodo": "Décret haute dodo",
+    "Décret scio": "Décret scio",
+
+
+    "Déconnexion": "Logout",
+
+    "Bienvenue":"Welcome",
+    "Vue Principale":"Main view",
+    "Production":"Production",
+    "Producteurs":"Producers",
+    "Parcelles":"Plots",
+    "Superficie":"Area",
+    "CO2 & Conformité RDUE":"CO2 & EUDR compliance",
+    "CO2 éq(T)":"CO2 éq(T)",
+    "Parcelles > à (4Ha)":"Plots > (4Ha)",
+    "Arbres plantés":"Planted trees",
+    "Parcelles à risque":"Plots at risk",
+    "Producteurs / sections":"Producers / Sections",
+    "Parcelles / Sections":"Plots / Sections",
+    "Parcelles / risque modéré":"Plots / moderate risk",
+    "Production / section":"Production / section",
+    "Plantings / section": "Plantings / section",
+    "Planting / espece": "Planting / espece",
+
+    "Info Profil":"Profile info",
+    "Créer une coopérative":"Create a cooperative",
+    "Logo":"Logo",
+    "Coopérative":"Cooperative",
+    "Région":"Region",
+    "Siège":"Headquarters",
+    "Projet associé":"Associated project",
+    "Responsable":"Manager",
+    "Action":"Action",
+
+    "Paramètrage":"Setting",
+    "Paramètres":"Settings",
+    "Campagne":"Campaign",
+    "Projet":"Project",
+    "Volume Production":"Production Volume",
+    "Superficie totale":"Total area",
+    "Contact":"Contact",
+    "N° de Connaissement":"Bill of Lading No.",
+    "N° Registre":"Register No.",
+    "Campagne en cours":"Current campaign",
+    "Volume Camp Préc":"Prev Camp Volume",
+
+
+    "Saisons de recolte":"Harvest seasons",
+    "Ajouter une saison":"Add a season",
+    "Libelle":"Libelle",
+    "Ajouter":"Add",
+    "Fermer":"Close",
+    "Modifier":"Edit",
+    "Plants plantés":"Planted plants",
+    "CO2 stocké eq(T)":"Stored CO2 eq(T)",
+    "Cultures":"Crops",
+    "Ajouter une culture":"Add a crop",
+    "Ajouter une section":"Add a section",
+    "Prix du kilogramme":"Price per kilogram",
+
+    "Liste des producteurs":"Producers list",
+    "Section totale":"Total section",
+    "Nombre de parcelle":"Number of plots",
+    "Ajouter un producteur":"Add a producer",
+    "Nom et prénoms":"Full name",
+    "Nombre Parcelle":"Number of plots",
+    "Exporter la liste":"Export list",
+    "Format":"Format",
+    "Choisir un format":"Choose a format",
+    "FORMAT PDF":"PDF FORMAT",
+    "FORMAT EXCEL":"EXCEL FORMAT",
+    "Toutes les campagnes":"All campaigns",
+    "Téléchanrgement en cours":"Download in progress",
+    "Exporter":"Export",
+
+    "Enregistrement d'un producteur":"Producer registration",
+    "Code du producteur":"Producer code",
+    "Nom complet":"Full name",
+    "Lieu d'habitation":"Place of residence",
+    "Photo":"Photo",
+
+    "Enregistrer une parcelle pour": "Register a plot for",
+    "Mode d'acquisition de la parcelle":"Method of acquisition",
+    "Certification":"Certification",
+    "Culture sur la parcelle":"Crop on plot",
+    "Localisation de la parcelle":"Location of the plot",
+    "Latitude":"Latitude",
+    "Longitude":"Longitude",
+    "Modifier le producteur":"Change producer",
+    "Précédent": "Previous",
+    "Suivant":"Next",
+    "page": "page",
+    "sur": "on",
+
+    "Liste des Parcelles": "Plots list",
+    "Producteur total":"Total producers",
+    "Modifier la parcelle":"Edit parcel",
+    "Producteur":"Producer",
+    "Année d'acquisition":"Acquisition year",
+    "Recherche une parcelle":"Search a plot",
+    "Recherche un producteur":"Search a producer",
+
+
+    "Liste des Productions":"Productions list",
+    "Enregistrement d'une section":"Add Section",
+    "Livraisons":"Deliveries",
+    "Lieu":"Location",
+    "Campagne d'enrolement":"Enrollment campaign",
+    "Localité":"Locality",
+    "statut":"status",
+    "Mes Parcelles":"My Plots",
+    "Ajouter une parcelle":"Add a plot",
+    "Activités de la parcelle":"Plot activities",
+     "Faire planting":"Do planting",
+    "Recherche de planting":"Search planting",
+    "Mode acquisition":"Acquisition mode",
+    "Recherche parcelle": "Search plot",
+    "Données invalides":"Invalid data",
+
+    "Date":"Date",
+    "Especes":"Species",
+    "Total plantés":"Total planted",
+
+    "Monitoring du planting":"Planting monitoring",
+    "Date de monitoring":"Monitoring date",
+    "Causes de mortalité":"Causes of mortality",
+    "Liste des espèces reçues et plantés":"List of species received and planted",
+    "Plants recus":"Plants received",
+    "Plants dénombrés":"Plants counted",
+    "Avertissement ! plants denombré supérieur aux plants recus.":"Warning! plants counted higher than those received.",
+    "Enregistrer Monitoring":"Save Monitoring",
+    "Les details du planting":"Planting details",
+    "Faire planting sur la parcelle":"Planting on plot",
+    "Date de planting":"Planting date",
+    "Plants existant sur la parcelle":"Existing plants on plot", 
+    "Ajouter des especes":"Add species",
+    "Nombres de plants":"Number of plants",
+    "Enregistrer Planting":"Save Planting",
+    "Decrire les plants existants sur la parcelle": "Describe existing plants on plot",
+
+
+    "Taux de réussite":"Success rates", 
+    "Plants Vivants/Plantés":"Live/Planted Plants",
+    "Les details du Monitoring":"Monitoring details",
+    "Plants Total denombré":"Plants Total counted",
+    "Taux de reussite":"Success rate",
+    "Plants reçus": "Plants received",
+    "Plants Vivants": "Live plants",
+    "Taux/Espèce":"Rate/species",
+    "Carbone stocké":"Carbon stored",
+    "Parcelle": "Plot",
+    "En cours de chargement":"Loading in progress",
+
+    "TOUS": "ALL",
+    "Importer un fichier KML":"Import a KML file",
+    "Trouver un Producteur":"Find a Producer",
+    "Nom, Code": "Name, Code",
+    "CODE":"CODE",
+    "PRODUCTEUR":"PRODUCER",
+    "SECTION":"SECTION",
+    "COORDONNEES":"COORDINATES",
+    "CULTURE":"CULTURE",
+    "SUPERFICIE":"AREA",
+    "PLANTING":"PLANTING",
+
+    "Liste plantings":"Planting list",
+
+    "Code":"Code",
+    "Monitoring":"Monitoring",
+    "Total Plantés":"Total Planted",
+
+    "Agroforêts": "Agroforests",
+    "Forêts classées": "Classified forests",
+    "Parcs & Réserves nationals":"Parks & National Reserves",
+    "Zone tampon à 2 Km": "2 Km buffer zone",
+    "Risque Modéré":"Moderate Risk",
+    "Risque Zéro":"Risque Zéro",
+    "Points D'Intérêt":"Points Of Interest",
+    "Données Invalides":"Data Invalids",
+    "CERTIFIE":"CERTIFIED",
+    "ID":"ID",
+    "INFORMATIONS":"INFORMATIONS",
+    "NIVEAU DE RISQUE":"RISK LEVEL",
+    "Risque zéro":"Zero risk",
+    "Risque élevé":"High risk",
+    "Risque modéré":"Moderate risk",
+    "Espece":"Species",
+
+    "STATUT FONCIER": "PROPERTY STATUS",
+    "Forêt classée": "Classified forest",
+    "Agroforêt": "Agroforest",
+    "Parc & réserve": "Park & reserve",
+
+    "Parcourir": "Browse",
+    "Aucun fichier sélectionné": "No files selected",
+
+    "Parcelles à Risque Elevé : Ensemble des parcelles qui chevauchent une Forêt classée / Parc & Réserve": "High-risk plots: All plots overlapping a classified forest / Park & Reserve",
+    "Parcelles à Risque Modéré : Ensemble des parcelles situé à moins de 2 Km d'une forêt classée / parc & réserve":"Moderate-risk plots: all plots less than 2 km from a classified forest / park or reserve.",
+    "Parcelles à Risque zéro : Ensemble des parcelles situé à plus de 2 Km d'une forêt classée / parc & réserve":"Zero-risk plots: All plots located more than 2 km from a classified forest / park or reserve.",
+    "Données Invalides : Ensemble des parcelles ayant des irrégularités de polygones et de positionnement":"Invalides data: All parcels with polygon and positioning irregularities"
+
+
+    
+
+    
+    
+
+
+    
+
+
+
+
+
+
+
+    
+
+}

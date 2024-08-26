@@ -1,13 +1,16 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Content from "../../../Content";
-import { useEffect, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import personIcon from '../../../assets/img/avatar.jpg';
 import axios from "axios";
 import Swal from "sweetalert2";
 import Validation from "../../../Validation";
 
-const baseUrl = "http://127.0.0.1:8000/api"; 
-function ParcList(){
+import BaseUrl from "../../../config/baseUrl";
+
+// const baseUrl = 'http://127.0.0.1:8000/api';
+const url = BaseUrl();
+function ParcListInf4ha(){
     const {coopID} = useParams();
     const navigate = useNavigate();
     const [cooperative,setCooperative] = useState([]);
@@ -45,18 +48,18 @@ function ParcList(){
         if(coopID){
             try {
 
-                axios.get(baseUrl+'/cooperative-list/?coopID='+coopID).then((resp)=>{
+                axios.get(url+'/cooperative-list/?coopID='+coopID).then((resp)=>{
                     setCooperative(resp.data[0]);
                 });
-                axios.get(baseUrl+'/culture-list/?coopID='+coopID).then((resp)=>{
+                axios.get(url+'/culture-list/?coopID='+coopID).then((resp)=>{
                   setCulutres(resp.data);
                 })
   
-                axios.get(baseUrl+'/mode-acquisition-list/').then((resp)=>{
+                axios.get(url+'/mode-acquisition-list/').then((resp)=>{
                   setModeAcquisitions(resp.data);
                 });
 
-                axios.get(baseUrl+'/certification-list/').then((resp)=>{
+                axios.get(url+'/certification-list/').then((resp)=>{
                   setCertifications(resp.data);
                 });
             } catch (error) {
@@ -70,7 +73,7 @@ function ParcList(){
      
       try {
         if(cooperative && cooperative.projet?.id){
-          axios.get(baseUrl+'/campagne-proj-list/?projId='+cooperative.projet?.id).then((resp)=>{
+          axios.get(url+'/campagne-proj-list/?projId='+cooperative.projet?.id).then((resp)=>{
             setCampagneList(resp.data);
           });
 
@@ -84,7 +87,7 @@ function ParcList(){
   },[functAnneeList(),cooperative]) 
 
     const fetchData = () => {
-        axios.get(baseUrl+'/parcelles-list/?coopID='+coopID)
+        axios.get(url+'/parcelles-list-inf-4ha/?coopID='+coopID)
           .then((resp) => {
             setnextUrl(resp.data.next);
             setprevUrl(resp.data.previous)
@@ -117,7 +120,7 @@ function ParcList(){
 
     const onSearchParcelle=(event)=>{
         try {
-          axios.get(baseUrl+'/parcelles-list/?q='+event.target.value+'&co='+coopID).then((resp)=>{
+          axios.get(url+'/parcelles-list-inf-4ha/?q='+event.target.value+'&co='+coopID).then((resp)=>{
             
             setParcelleList(resp.data.results);
           });
@@ -147,7 +150,7 @@ function ParcList(){
         }).then((result) => {
           if (result.isConfirmed) {
             try {
-              axios.get(baseUrl+'/parcelles-list/?code='+Code+'&coop='+coopID).then((resp)=>{
+              axios.get(url+'/parcelles-list/?code='+Code+'&coop='+coopID).then((resp)=>{
 
                 setParcelleList(resp.data.results);
                 setTotalPages(resp.data.count / resp.data.results.length);
@@ -174,7 +177,7 @@ function ParcList(){
 
     const modalOpenParc=(code)=>{
       window.$(`#addEventModalParc-${code}`).modal("show");
-      axios.get(baseUrl+'/parcelles-list/?parcId='+code).then((resp)=>{
+      axios.get(url+'/parcelles-list/?parcId='+code).then((resp)=>{
         setParcEdit(resp.data.results[0]);
 
         setParcelleData({
@@ -232,7 +235,7 @@ function ParcList(){
         });
   
           try {
-          axios.post(baseUrl+'/update-coop-parcelle/',_formData).then((resp)=>{
+          axios.post(url+'/update-coop-parcelle/',_formData).then((resp)=>{
             Swal.close()
   
             if(resp.data.bool)
@@ -247,7 +250,7 @@ function ParcList(){
                 confirmButtonText: 'OK'
               }).then((result) => {
                 if (result.isConfirmed) {
-                  axios.get(baseUrl+'/parcelles-list/?coopID='+coopID).then((resp)=>{
+                  axios.get(url+'/parcelles-list/?coopID='+coopID).then((resp)=>{
                     setnextUrl(resp.data.next);
                     setprevUrl(resp.data.previous)
                     setParcelleList(resp.data.results);
@@ -309,7 +312,7 @@ function ParcList(){
      e.preventDefault()
 
      try {
-       axios.get(baseUrl+'/export-parcelle-cooperative/?format='+format_exp+'&campagne='+campagne_exp+'&coopID='+coopID,
+       axios.get(url+'/export-parcelle-cooperative/?format='+format_exp+'&campagne='+campagne_exp+'&coopID='+coopID,
          {responseType:'blob'}
        ).then((response)=>{
            if (format_exp == 'PDF'){
@@ -331,73 +334,79 @@ function ParcList(){
 
 
     return(
-        <>
+        <Fragment>
             <Content sideID={"cooperatives"} parent={"generalite"}>
-            <h2 className="text-bold text-1100 mb-5">Liste des Parcelles ({totalParc})</h2>
-            <div className="mb-5 bg-white p-3 border-2 rounded-2 " >
-            <div className="row">
-                                 
-                <div className="col-md-4">
-                    <div className="card">
-                        <h5 className="card-header bg-info text-white p-2 text-center">
-                            Coopérative
-                        </h5>
-                        <div className="card-body p-2">
-                            <h3 className="card-title text-center text-warning"> <Link to={`/views-coop/${coopID}/`}>{cooperative.nomCoop}</Link> </h3>
+            {/*<h2 className="text-bold text-1100 mb-5">Liste des Parcelles Inférieur à 4ha ({totalParc})</h2>*/}
+                <div className="mb-5 bg-white p-3 border-2 rounded-2 ">
+                <div className="row">
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-info text-white p-2 text-center">
+                                    Coopérative
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-warning"><Link
+                                        to={`/views-coop/${coopID}/`}>{cooperative.nomCoop}</Link></h3>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card">
-                        <h5 className="card-header bg-success text-white p-2 text-center">
-                            Producteur total
-                        </h5>
-                        <div className="card-body p-2">
-                            <h3 className= "card-title text-center text-success" >{cooperative.total_producteurs_coop}</h3>
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-success text-white p-2 text-center">
+                                    Nb Parcelles Inférieur à (4Ha)
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-success">{totalParc}</h3>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div> 
 
-                <div className="col-md-4">
-                <div className="card">
-                        <h5 className="card-header bg-info text-white p-2 text-center">
-                            Superficie totale (Hectare)
-                        </h5>
-                        <div className="card-body p-2">
-                            <h3 className= "card-title text-center text-warning">{cooperative.sumSuperficie?.total.toFixed(2)}</h3>
+                        <div className="col-md-4">
+                            <div className="card">
+                                <h5 className="card-header bg-info text-white p-2 text-center">
+                                    Superficie totale Parcelles Inférieur à (4Ha)
+                                </h5>
+                                <div className="card-body p-2">
+                                    <h3 className="card-title text-center text-warning">{cooperative.sumSuperficieInf4ha?.total.toFixed(2)}</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div> 
-            </div> 
-            </div>
-              <div id="members" >
-                <div className="row align-items-center justify-content-between g-3 mb-4">
-                  <div className="col col-auto">
-                    <div className="search-box">
-                      <div className="position-relative" data-bs-toggle="search" data-bs-display="static">
-                          <input className="form-control search-input search" type="search" placeholder="Recherche une parcelle" aria-label="Search"  onChange={onSearchParcelle} />
-                        <span className="fas fa-search search-box-icon"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-auto">
-                    <div className="d-flex align-items-center">
-                        <button className="btn btn-link text-900 me-4 px-0" data-bs-toggle="modal" data-bs-target="#exampleModal" ><span className="fa-solid fa-file-export fs--1 me-2"></span>Export</button>
-                        {/*<button className="btn btn-primary btn-sm" type="button"  onClick={()=>modalOpenParc()}>*/}
-                        {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
-                        {/*  Ajouter une parcelle*/}
-                        {/*</button>*/}
-                        <Link className="btn btn-primary btn-sm" to={`/coops/producteur-list/${coopID}/`} >
-                          <span className="fas fa-plus pe-2 fs--2"></span>
-                          Ajouter une parcelle
-                        </Link>
-                    </div>
-                  </div>
                 </div>
-                <div className="mx-n4 mx-lg-n6 px-4 px-lg-6 mb-9 bg-white border-y border-300 mt-2 position-relative top-1">
-                  <div className="table-responsive scrollbar ms-n1 ps-1">
-                    <table className="table fs--1 mb-0">
-                          <thead>
+                <div id="members">
+                    <div className="row align-items-center justify-content-between g-3 mb-4">
+                        <div className="col col-auto">
+                            <div className="search-box">
+                                <div className="position-relative" data-bs-toggle="search" data-bs-display="static">
+                                    <input className="form-control search-input search" type="search"
+                                           placeholder="Recherche une parcelle" aria-label="Search"
+                                           onChange={onSearchParcelle}/>
+                                    <span className="fas fa-search search-box-icon"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-auto">
+                            <div className="d-flex align-items-center">
+                                <button className="btn btn-link text-900 me-4 px-0" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"><span
+                                    className="fa-solid fa-file-export fs--1 me-2"></span>Export
+                                </button>
+                                {/*<button className="btn btn-primary btn-sm" type="button"  onClick={()=>modalOpenParc()}>*/}
+                                {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
+                                {/*  Ajouter une parcelle*/}
+                                {/*</button>*/}
+                                {/*<Link className="btn btn-primary btn-sm" to={`/coops/producteur-list/${coopID}/`} >*/}
+                                {/*  <span className="fas fa-plus pe-2 fs--2"></span>*/}
+                                {/*  Ajouter une parcelle*/}
+                                {/*</Link>*/}
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        className="mx-n4 mx-lg-n6 px-4 px-lg-6 mb-9 bg-white border-y border-300 mt-2 position-relative top-1">
+                        <div className="table-responsive scrollbar ms-n1 ps-1">
+                            <table className="table fs--1 mb-0">
+                            <thead>
                           <tr className="bg-warning">
                               
                               <th className="sort white-space-nowrap align-middle pe-3 ps-0 text-uppercase text-center" scope="col"  >Code</th>
@@ -410,7 +419,7 @@ function ParcList(){
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Longitude</th>
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Culture</th>
                               <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Superficie (ha)</th>
-                              <th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Actions</th>
+                              {/*<th className="sort align-middle text-center text-uppercase" scope="col" data-sort="type" >Actions</th>*/}
                           </tr>
                           </thead>
                           <tbody className="list" id="lead-details-table-body">
@@ -448,146 +457,146 @@ function ParcList(){
                                   <td className="align-middle text-center white-space-nowrap pe-0 action py-2 ">
                                   {parc.superficie}
                                   </td>
-                                  <td className="align-middle text-center white-space-nowrap pe-0 action py-2 ">
+                                  {/*<td className="align-middle text-center white-space-nowrap pe-0 action py-2 ">*/}
                                   
-                                    <button className="btn btn-default btn-sm p-2 mx-1" onClick={()=>modalOpenParc(parc.code)}><i class="fa-solid fa-pencil text-primary"></i></button>
-                                        {/* modal create parcelle */}
-                                        <div className="modal fade" id={`addEventModalParc-${parc.code}`} data-bs-backdrop="static" role="dialog" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                          <div className="modal-dialog modal-md">
-                                            <div className="modal-content border">
-                                              <div id="addEventForm" autoComplete="off">
-                                                <div className="modal-header px-card border-0">
-                                                  <div className="w-100 d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                      <h5 className="mb-0 lh-sm text-1000">Modifier la parcelle <b className="text-success">{parc.producteur?.nomComplet}</b></h5>
-                                                    </div><button className="btn p-1 fs--2 text-900" type="button" data-bs-dismiss="modal" aria-label="Close">Fermer </button>
-                                                  </div>
-                                                </div>
-                                                <div className="modal-body p-card py-0">
+                                  {/*  <button className="btn btn-default btn-sm p-2 mx-1" onClick={()=>modalOpenParc(parc.code)}><i class="fa-solid fa-pencil text-primary"></i></button>*/}
+                                  {/*      /!* modal create parcelle *!/*/}
+                                  {/*      <div className="modal fade" id={`addEventModalParc-${parc.code}`} data-bs-backdrop="static" role="dialog" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">*/}
+                                  {/*        <div className="modal-dialog modal-md">*/}
+                                  {/*          <div className="modal-content border">*/}
+                                  {/*            <div id="addEventForm" autoComplete="off">*/}
+                                  {/*              <div className="modal-header px-card border-0">*/}
+                                  {/*                <div className="w-100 d-flex justify-content-between align-items-start">*/}
+                                  {/*                  <div>*/}
+                                  {/*                    <h5 className="mb-0 lh-sm text-1000">Modifier la parcelle <b className="text-success">{parc.producteur?.nomComplet}</b></h5>*/}
+                                  {/*                  </div><button className="btn p-1 fs--2 text-900" type="button" data-bs-dismiss="modal" aria-label="Close">Fermer </button>*/}
+                                  {/*                </div>*/}
+                                  {/*              </div>*/}
+                                  {/*              <div className="modal-body p-card py-0">*/}
 
-                                                <div className="row">
-                                                    <div className="form-floating mb-5 col-md-6">
-                                                        <select className="form-select" id="categorie" name="acquisition" onChange={handleChangeParcelle} value={parcelleData.acquisition}>
-                                                        <option selected="selected" value="">...</option>
-                                                        {acquisitions.map((acquisition,index)=>
-                                                          <option value={acquisition.id}>{acquisition.libelle}</option>
-                                                        )}
-                                                        </select>
-                                                        {errors.acquisition && <span className="text-danger">{errors.acquisition}</span>}
-                                                        <label htmlFor="eventLabel" className="pb-2 text-warning">Mode d'acquisition de la parcelle</label>
-                                                    </div>
+                                  {/*              <div className="row">*/}
+                                  {/*                  <div className="form-floating mb-5 col-md-6">*/}
+                                  {/*                      <select className="form-select" id="categorie" name="acquisition" onChange={handleChangeParcelle} value={parcelleData.acquisition}>*/}
+                                  {/*                      <option selected="selected" value="">...</option>*/}
+                                  {/*                      {acquisitions.map((acquisition,index)=>*/}
+                                  {/*                        <option value={acquisition.id}>{acquisition.libelle}</option>*/}
+                                  {/*                      )}*/}
+                                  {/*                      </select>*/}
+                                  {/*                      {errors.acquisition && <span className="text-danger">{errors.acquisition}</span>}*/}
+                                  {/*                      <label htmlFor="eventLabel" className="pb-2 text-warning">Mode d'acquisition de la parcelle</label>*/}
+                                  {/*                  </div>*/}
 
-                                                    
+                                  {/*                  */}
 
-                                                    <div className="form-floating mb-5 col-md-6">
-                                                        <select className="form-select" id="categorie" name="annee_acquis" onChange={handleChangeParcelle} value={parcelleData.annee_acquis}>
-                                                        <option selected="selected" value="">...</option>
-                                                        {anneeLists.map((annee,index)=>
-                                                            <option  value={annee}>{annee}</option>
-                                                        )}
-                                                        </select>
-                                                        <label htmlFor="eventLabel" className="pb-2 text-warning">Année d'acquisition</label>
-                                                    </div>
-                                                </div>
-                                                <div className="row">
-                                                    
-                                                    <div className="form-floating mb-3 col-md-4">
-                                                        <select className="form-select" id="categorie" name="certification" onChange={handleChangeParcelle} value={parcelleData.certification}>
-                                                        <option selected="selected" value="">...</option>
-                                                        {certifications.map((certif,index)=>
-                                                            <option  value={certif.id}>{certif.libelle}</option>
-                                                        )}
-                                                        </select>
-                                                        <label htmlFor="eventLabel" className="pb-2 text-warning">Certification</label>
-                                                    </div>
+                                  {/*                  <div className="form-floating mb-5 col-md-6">*/}
+                                  {/*                      <select className="form-select" id="categorie" name="annee_acquis" onChange={handleChangeParcelle} value={parcelleData.annee_acquis}>*/}
+                                  {/*                      <option selected="selected" value="">...</option>*/}
+                                  {/*                      {anneeLists.map((annee,index)=>*/}
+                                  {/*                          <option  value={annee}>{annee}</option>*/}
+                                  {/*                      )}*/}
+                                  {/*                      </select>*/}
+                                  {/*                      <label htmlFor="eventLabel" className="pb-2 text-warning">Année d'acquisition</label>*/}
+                                  {/*                  </div>*/}
+                                  {/*              </div>*/}
+                                  {/*              <div className="row">*/}
+                                  {/*                  */}
+                                  {/*                  <div className="form-floating mb-3 col-md-4">*/}
+                                  {/*                      <select className="form-select" id="categorie" name="certification" onChange={handleChangeParcelle} value={parcelleData.certification}>*/}
+                                  {/*                      <option selected="selected" value="">...</option>*/}
+                                  {/*                      {certifications.map((certif,index)=>*/}
+                                  {/*                          <option  value={certif.id}>{certif.libelle}</option>*/}
+                                  {/*                      )}*/}
+                                  {/*                      </select>*/}
+                                  {/*                      <label htmlFor="eventLabel" className="pb-2 text-warning">Certification</label>*/}
+                                  {/*                  </div>*/}
 
-                                                  <div className="form-floating mb-3 col-md-4">
-                                                      <input className="form-control" id="sigle" type="text" name="code_certif" onChange={handleChangeParcelle} value={parcelleData.code_certif}/>
-                                                      
-                                                      <label htmlFor="eventTitle" className="pb-2 text-warning">Code Certification</label>
-                                                    </div>
+                                  {/*                <div className="form-floating mb-3 col-md-4">*/}
+                                  {/*                    <input className="form-control" id="sigle" type="text" name="code_certif" onChange={handleChangeParcelle} value={parcelleData.code_certif}/>*/}
+                                  {/*                    */}
+                                  {/*                    <label htmlFor="eventTitle" className="pb-2 text-warning">Code Certification</label>*/}
+                                  {/*                  </div>*/}
 
-                                                
-                                                    <div className="form-floating mb-3 col-md-4">
-                                                        <select className="form-select" id="categorie" name="annee_certificat" onChange={handleChangeParcelle} value={parcelleData.annee_certificat}>
-                                                        <option selected="selected" value="">...</option>
-                                                        {anneeLists.map((annee,index)=>
-                                                            <option  value={annee}>{annee}</option>
-                                                        )}
-                                                        </select>
-                                                        <label htmlFor="eventLabel" className="pb-2 text-warning">Année de Certification</label>
-                                                    </div>
+                                  {/*              */}
+                                  {/*                  <div className="form-floating mb-3 col-md-4">*/}
+                                  {/*                      <select className="form-select" id="categorie" name="annee_certificat" onChange={handleChangeParcelle} value={parcelleData.annee_certificat}>*/}
+                                  {/*                      <option selected="selected" value="">...</option>*/}
+                                  {/*                      {anneeLists.map((annee,index)=>*/}
+                                  {/*                          <option  value={annee}>{annee}</option>*/}
+                                  {/*                      )}*/}
+                                  {/*                      </select>*/}
+                                  {/*                      <label htmlFor="eventLabel" className="pb-2 text-warning">Année de Certification</label>*/}
+                                  {/*                  </div>*/}
 
-                                                </div>
+                                  {/*              </div>*/}
 
-                                                  <div className="row">
+                                  {/*                <div className="row">*/}
 
-                                                    <div className="form-floating mb-3 col-md-6">
-                                                      <input className="form-control" id="sigle" type="number" name="superficie" onChange={handleChangeParcelle} value={parcelleData.superficie}/>
-                                                      {errors.superficie && <span className="text-danger">{errors.superficie}</span>}
-                                                      <label htmlFor="eventTitle" className="pb-2 text-warning">Superficie</label>
-                                                    </div> 
-                                                    
-                                                    <div className="form-floating mb-3 col-md-6">
-                                                        <select className="form-select" id="categorie" name="culture" onChange={handleChangeParcelle} value={parcelleData.culture}>
-                                                        <option selected="selected" value="">...</option>
-                                                        {cultures.map((culture,index)=>
-                                                            <option  value={culture.id}>{culture.libelle}</option>
-                                                        )}
-                                                        </select>
-                                                        {errors.culture && <span className="text-danger">{errors.culture}</span>}
-                                                        <label htmlFor="eventLabel" className="pb-2 text-warning">Culture sur la parcelle</label>
-                                                    </div>
+                                  {/*                  <div className="form-floating mb-3 col-md-6">*/}
+                                  {/*                    <input className="form-control" id="sigle" type="number" name="superficie" onChange={handleChangeParcelle} value={parcelleData.superficie}/>*/}
+                                  {/*                    {errors.superficie && <span className="text-danger">{errors.superficie}</span>}*/}
+                                  {/*                    <label htmlFor="eventTitle" className="pb-2 text-warning">Superficie</label>*/}
+                                  {/*                  </div> */}
+                                  {/*                  */}
+                                  {/*                  <div className="form-floating mb-3 col-md-6">*/}
+                                  {/*                      <select className="form-select" id="categorie" name="culture" onChange={handleChangeParcelle} value={parcelleData.culture}>*/}
+                                  {/*                      <option selected="selected" value="">...</option>*/}
+                                  {/*                      {cultures.map((culture,index)=>*/}
+                                  {/*                          <option  value={culture.id}>{culture.libelle}</option>*/}
+                                  {/*                      )}*/}
+                                  {/*                      </select>*/}
+                                  {/*                      {errors.culture && <span className="text-danger">{errors.culture}</span>}*/}
+                                  {/*                      <label htmlFor="eventLabel" className="pb-2 text-warning">Culture sur la parcelle</label>*/}
+                                  {/*                  </div>*/}
 
-                                                  </div>
+                                  {/*                </div>*/}
 
-                                                  <div className="position-relative">
-                                                      <hr className="bg-200 mt-1" />
-                                                      <div className="divider-content-center bg-white">Localisation de la parcelle</div>
-                                                    </div>
+                                  {/*                <div className="position-relative">*/}
+                                  {/*                    <hr className="bg-200 mt-1" />*/}
+                                  {/*                    <div className="divider-content-center bg-white">Localisation de la parcelle</div>*/}
+                                  {/*                  </div>*/}
 
-                                                  <div className="form-floating mb-3">
-                                                    <input className="form-control" id="sigle" type="text" name="latitude" onChange={handleChangeParcelle} value={parcelleData.latitude}/>
-                                                    <label htmlFor="eventTitle" className="pb-2 text-warning">Latitude</label>
-                                                  </div>
+                                  {/*                <div className="form-floating mb-3">*/}
+                                  {/*                  <input className="form-control" id="sigle" type="text" name="latitude" onChange={handleChangeParcelle} value={parcelleData.latitude}/>*/}
+                                  {/*                  <label htmlFor="eventTitle" className="pb-2 text-warning">Latitude</label>*/}
+                                  {/*                </div>*/}
 
-                                                
-                                                    <div className="form-floating mb-3">
-                                                      <input className="form-control" id="chef" type="text" name="longitude" onChange={handleChangeParcelle} value={parcelleData.longitude} />
-                                                      <label htmlFor="eventTitle" className="pb-2 text-warning">Longitude</label>
-                                                    </div>
-                                                  
-                                                  
+                                  {/*              */}
+                                  {/*                  <div className="form-floating mb-3">*/}
+                                  {/*                    <input className="form-control" id="chef" type="text" name="longitude" onChange={handleChangeParcelle} value={parcelleData.longitude} />*/}
+                                  {/*                    <label htmlFor="eventTitle" className="pb-2 text-warning">Longitude</label>*/}
+                                  {/*                  </div>*/}
+                                  {/*                */}
+                                  {/*                */}
 
-                                                  {/*  <div className="row">
-                                                        <div className="form-floating mb-3 col-md-6">
-                                                            <input className="form-control" id="titre" type="number" name="nbParc"  />
-                                                            <label htmlFor="eventTitle" className="pb-2 text-warning">Nombre de parcelle</label>
-                                                        </div>
+                                  {/*                /!*  <div className="row">*/}
+                                  {/*                      <div className="form-floating mb-3 col-md-6">*/}
+                                  {/*                          <input className="form-control" id="titre" type="number" name="nbParc"  />*/}
+                                  {/*                          <label htmlFor="eventTitle" className="pb-2 text-warning">Nombre de parcelle</label>*/}
+                                  {/*                      </div>*/}
 
-                                                        <div className="form-floating mb-3 col-md-6">
-                                                            <input className="form-control" id="titre" type="text" name="contacts" />
-                                                            <label htmlFor="eventTitle" className="pb-2 text-warning">Contact</label>
-                                                        </div>
-                                                    </div> */}
-                                                  
+                                  {/*                      <div className="form-floating mb-3 col-md-6">*/}
+                                  {/*                          <input className="form-control" id="titre" type="text" name="contacts" />*/}
+                                  {/*                          <label htmlFor="eventTitle" className="pb-2 text-warning">Contact</label>*/}
+                                  {/*                      </div>*/}
+                                  {/*                  </div> *!/*/}
+                                  {/*                */}
 
-                                                  {/* <div className="form-floating mb-3">
-                                                    <input className="form-control" id="titre" type="file" name="photo" />
-                                                    <label htmlFor="eventTitle" className="pb-2 text-warning">Ma photo</label>
-                                                  </div> */}
-                                                  
-                                                  
-                                                  </div>
-                                                  <div className="modal-footer d-flex justify-content-between align-items-center border-0">
-                                                    <button className="btn btn-primary px-4 form-control" type="button" onClick={submitParc}>Modifier</button>
-                                                  </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                    <button className="btn btn-default btn-sm p-2 " onClick={()=>onDeleteParc(parc.code,parc.producteur?.nomComplet)}><i class="fa-solid fa-trash text-danger"></i></button>
-                                  </td>
+                                  {/*                /!* <div className="form-floating mb-3">*/}
+                                  {/*                  <input className="form-control" id="titre" type="file" name="photo" />*/}
+                                  {/*                  <label htmlFor="eventTitle" className="pb-2 text-warning">Ma photo</label>*/}
+                                  {/*                </div> *!/*/}
+                                  {/*                */}
+                                  {/*                */}
+                                  {/*                </div>*/}
+                                  {/*                <div className="modal-footer d-flex justify-content-between align-items-center border-0">*/}
+                                  {/*                  <button className="btn btn-primary px-4 form-control" type="button" onClick={submitParc}>Modifier</button>*/}
+                                  {/*                </div>*/}
+                                  {/*            </div>*/}
+                                  {/*          </div>*/}
+                                  {/*        </div>*/}
+                                  {/*      </div>*/}
+                                  {/*  <button className="btn btn-default btn-sm p-2 " onClick={()=>onDeleteParc(parc.code,parc.producteur?.nomComplet)}><i class="fa-solid fa-trash text-danger"></i></button>*/}
+                                  {/*</td>*/}
                               </tr>
                               )}  
                           </tbody>
@@ -647,8 +656,8 @@ function ParcList(){
             </div>
           </div>
             </Content>
-        </>
+        </Fragment>
     )
 }
 
-export default ParcList;
+export default ParcListInf4ha;

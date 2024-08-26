@@ -1,7 +1,6 @@
 import React, {Fragment} from 'react';
 import {useEffect, useState} from "react";
-import RAPPORT_AGRIAL from "../../../data/RAPPORT_AGRIAL.pdf"
-import RAPPORT_COOPAHS from "../../../data/RAPPORT_AGRIAL.pdf"
+import RAPPORT_COOPAHS from "../../../data/rapport_final_agrial.pdf"
 import UserContext from "../../../context/useContext";
 
 
@@ -20,7 +19,7 @@ import UserContext from "../../../context/useContext";
 
 
 
-function RapportAnalyseAgrial() {
+function RapportAnalyseCoopaahs() {
     const [cooperatives,setCooperatives] = useState([]);
     const user =  UserContext();
 
@@ -30,17 +29,7 @@ function RapportAnalyseAgrial() {
     return (
         <Fragment>
             <div>
-                {user && user.id === 8
-                    ? <iframe
-                        src={RAPPORT_AGRIAL}
-                        width="100%"
-                        height="1000px"
-                        allow="autoplay"
-                        title="RAPPORT D'ANALYSE AGRIAL"
-                    />
-                    : ""
-                }
-                {user && user.id === 11
+                {user && user?.id === 11
                     ? <iframe
                         src={RAPPORT_COOPAHS}
                         width="100%"
@@ -50,8 +39,6 @@ function RapportAnalyseAgrial() {
                     />
                     : ""
                 }
-
-
                 {/*<Document file={RAPPORT}>*/}
                 {/*    /!*<Page pageNumber={1} />*!/*/}
                 {/*</Document>*/}
@@ -62,4 +49,4 @@ function RapportAnalyseAgrial() {
 }
 
 
-export default RapportAnalyseAgrial;
+export default RapportAnalyseCoopaahs;

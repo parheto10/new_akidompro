@@ -3,6 +3,8 @@ import { extractShapes } from '../utils';
 import markerIcon from '../../assets/marker-icon.png';
 import loader from '../../assets/loading.gif';
 import limit_ci from '../../data/limite_ci.json';
+import { useTranslation } from "react-i18next";
+//import Parcelle from '../../data/parcelle_test.json'
 
 import {
     Circle,
@@ -39,11 +41,17 @@ import UserContext from '../../context/useContext';
 import axios from 'axios';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import moment from 'moment';
+import { createPortal } from "react-dom";
+import {Modal} from "./modals/modalPlanting";
 import {useParams} from "react-router-dom";
 
-const baseUrl = "http://127.0.0.1:8000/api";
+import BaseUrl from "../../config/baseUrl";
+
+// const baseUrl = 'http://127.0.0.1:8000/api';
+const url = BaseUrl();
 
 function CarteParcelle(){
+    const {t} = useTranslation();
     const user = UserContext();
     const [kmlData, setKMLData] = useState(null);
     const [cooperativeList,setCooperativeList] = useState([]);
@@ -62,7 +70,15 @@ function CarteParcelle(){
     const [plantingList,setPlantingList] = useState([]);
     const [detailPlantingList,setDetailPlantingList] = useState([]);
     const [sectionList,setSectionList] = useState([]);
-    const [color, setColor] = useState("#ffff00");
+    const [color, setColor] = useState("#ffff00")
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [message, setMessage] = useState("");
+
+    const handleButtonClick = (value) => {
+        setModalOpen(false);
+        setMessage(value);
+    };
 
     const center = [5.316667, -4.033333]
 
@@ -85,10 +101,10 @@ function CarteParcelle(){
         //setDataIsLoading(true);
         setActiveNav('tous');
         try {
-            axios.get(baseUrl+'/cooperative-list/?userID='+user.id).then((resp)=>{
+            axios.get(url+'/cooperative-list/?userID='+user.id).then((resp)=>{
                 setCooperativeList(resp.data);
                 console.log(resp.data)
-                axios.get(baseUrl+'/section-list/?coopID='+resp.data[0].id).then((reponse)=>
+                axios.get(url+'/section-list/?coopID='+resp.data[0].id).then((reponse)=>
                     {
                         setSectionList(reponse.data);
                         console.log(reponse.data)
@@ -96,7 +112,7 @@ function CarteParcelle(){
                 )
             });
 
-            axios.get(baseUrl+'/parcelles-carte/?manager='+user.id).then((resp)=>{
+            axios.get(url+'/parcelles-carte/?manager='+user.id).then((resp)=>{
                 //setDataIsLoading(false);
                 setAllpoints(resp.data.results);
                 setTotalPoint(resp.data.count)
@@ -203,7 +219,7 @@ function CarteParcelle(){
         setDataIsLoading(true);
         setActiveNav(lib);
         try {
-            axios.get(baseUrl+'/parcelles-carte/?sectionID='+id).then((resp)=>{
+            axios.get(url+'/parcelles-carte/?sectionID='+id).then((resp)=>{
               setDataIsLoading(false);
               setAllpoints(resp.data.results);
               setTotalSectPoint(resp.data.count)
@@ -217,11 +233,10 @@ function CarteParcelle(){
 
 
     const voirSuiviofParc=(code,idx)=>{
-
         //setIdIndex(idx);
         window.$(`#openModalPlanting${idx}`).modal('show');
          try {
-            axios.get(baseUrl+'/planting-list/?parcId='+code).then((resp)=>{
+            axios.get(url+'/planting-list/?parcId='+code).then((resp)=>{
                 setPlantingList(resp.data);
             });
         } catch (error) {
@@ -239,7 +254,7 @@ function CarteParcelle(){
         window.$(`#addEventModalDetailPlant${i}`).modal('show');
 
         try {
-          axios.get(baseUrl+'/detail-planting-list/?plantCode='+plant).then((resp)=>{
+          axios.get(url+'/detail-planting-list/?plantCode='+plant).then((resp)=>{
             setDetailPlantingList(resp.data);
           })
         } catch (error) {
@@ -267,14 +282,14 @@ function CarteParcelle(){
 
    return (
     <Fragment>
-        <main className="main" id="top">
-            <nav className="navbar navbar-vertical navbar-expand-lg" >
+        <main className="main mt-5" id="top" style={{backgroundColor: "#EEF1DE"}}>
+            <nav className="navbar navbar-vertical navbar-expand-lg" style={{backgroundColor: "#EEF1DE"}}>
             <div className="collapse navbar-collapse" id="navbarVerticalCollapse">
-            <div className="navbar-vertical-content">
+            <div className="navbar-vertical-content" style={{backgroundColor: "#EEF1DE"}}>
                 <ul className="navbar-nav flex-column" id="navbarVerticalNav">
                 <a className={activeNav == 'tous' ? "nav-link active" : "nav-link"} href="#" data-bs-toggle="" aria-expanded="false" onClick={()=>fetchDataCoop()}>
                     <div className="d-flex align-items-center">
-                        <span className="" style={{fontWeight: "bold", fontSize: 28}}>TOUS <span className="text-white" style={{backgroundColor: 'red', borderRadius: 15}}>({totalPoint})</span> </span>
+                        <span className="" style={{fontWeight: "bold", fontSize: 28, marginTop: "20px"}}>{t("TOUS")} <span className="text-white" style={{backgroundColor: 'red', borderRadius: 15}}>({totalPoint})</span> </span>
                     </div>
                 </a>
                 {cooperativeList.map((cooperative,index)=> 
@@ -297,21 +312,18 @@ function CarteParcelle(){
                         <ul className="nav collapse parent show" data-bs-parent="#navbarVerticalCollapse" id="nv-home">
                         {sectionList.map((section,index)=>
                                 <li className="nav-item ">
-                                <a className={activeNav == section.libelle ? "nav-link active" : "nav-link"} data-bs-toggle="" aria-expanded="false" onClick={()=>allPointSection(section.id,section.libelle)}>
+                                <a className={activeNav === section.libelle ? "nav-link active" : "nav-link"} data-bs-toggle="" aria-expanded="false" onClick={()=>allPointSection(section.id,section.libelle)}>
                                     <div className="d-flex align-items-center">
                                         <span className="">{section.libelle}</span>
                                     </div>
                                 </a>
                             </li>
                         )}
-                        
                         </ul>
                     </div>
                     </div>
                 </li>
-                )} 
-                
-                
+                )}
                 </ul>
             </div>
             </div>
@@ -319,115 +331,48 @@ function CarteParcelle(){
         <NavBar />
 
 
-        <div className="content" style={{backgroundColor: "#d3d3d7"}}>
-        <div style={{marginLeft: "-37px", marginTop: "-35px",marginRight:"-35px"}}>
-        <div className="row">
+        <div className="content" style={{backgroundColor: "#EEF1DE"}}>
+        <div style={{marginLeft: "-37px",marginRight:"-35px"}}>
+        <div className="row" style={{marginTop: "-30px"}}>
             <div className="col-sm-8">
                 <div className="mb-1">
-                    <label className="form-label" htmlFor="customFile">Importer un fichier KML.</label>
+                    <label className="form-label" htmlFor="customFile">{t("Importer un fichier KML")}.</label>
                     <input onChange={handleFileUpload} className="form-control" id="customFile" type="file" />
                 </div>
             </div>
             <div className="col-sm-4 flex-end-center">
-                <label className="form-label" htmlFor="customFile">Trouver un Producteur</label>
+                <label className="form-label" htmlFor="customFile">{t("Trouver un Producteur")}</label>
                 <div className="col col-auto">
                     <div className="search-box">
                       <form>
                           <input className="form-control search-input search" type="text" aria-label="Search"
                                  onChange={(e) => setSearch(e.target.value)}
-                                 placeholder="Recherche un producteur........ "
+                                 placeholder={t("Nom, Code")}
                           />
                           <span className="fas fa-search search-box-icon"></span>
                           {/*<button className="btn btn-default btn-find font-sm">Rechercher</button>*/}
                       </form>
-                      {/*<div className="position-relative" data-bs-toggle="search" data-bs-display="static">*/}
-                      {/*    <input className="form-control search-input search" type="search" placeholder="Recherche un producteur" aria-label="Search" />*/}
-                      {/*  <span className="fas fa-search search-box-icon"></span>*/}
-                      {/*</div>*/}
+                    
                     </div>
                 </div>
                 {/*<label className="form-label" htmlFor="customFile">Trouver un Producteur</label>*/}
             </div>
         </div>
         <MapContainer
-        center={center}
-        zoom={6.4}
-        style={{ height: '840px', width: '100%'}}
-        scrollWheelZoom={true}
-        
+            center={center}
+            zoom={6.4}
+            style={{ height: '840px', width: '100%'}}
+            scrollWheelZoom={true}        
         >
         <TileLayer
                 url={osm.googleMap.url}
                 attribution={osm.googleMap.attribution}
             />
-            {/*<LayersControl>*/}
-            {/*    <LayersControl.Overlay checked name="Agroforêts">*/}
-            {/*        <GeoJSON*/}
-            {/*            // style={{"color":"#FFFF00"}}*/}
-            {/*            style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", color: "#FFFF00"}}*/}
-            {/*            data={agroforest}*/}
-            {/*            onEachFeature={OnEachCountry}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay checked name="Forêts classées">*/}
-            {/*        <GeoJSON*/}
-            {/*            // style={{"color":"#3AF24B"}}*/}
-            {/*            style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", color: "#18bd38"}}*/}
-            {/*            data={classe}*/}
-            {/*            onEachFeature={OnEachCountry}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay checked name="Parcs & Réserves nationals">*/}
-            {/*        <GeoJSON*/}
-            {/*            // style={{"color":"#95A595"}}*/}
-            {/*            style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", color: "#95A595"}}*/}
-            {/*            data={parc}*/}
-            {/*            onEachFeature={OnEachCountry}*/}
-            {/*        />*/}
-
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay name="Risque Modéré">*/}
-            {/*        <GeoJSON*/}
-            {/*            style={{"color":"#D56E1BFF"}}*/}
-            {/*            data={Parcelle_Buffer}*/}
-            {/*            onEachFeature={OnEachCountryBuffer}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay name="Risque Zéro">*/}
-            {/*        <GeoJSON*/}
-            {/*            style={{"color":"#fff"}}*/}
-            {/*            data={Risque_Zero}*/}
-            {/*            onEachFeature={OnEachCountryBuffer}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay name="Données Invalides AGRIAL">*/}
-            {/*        <GeoJSON*/}
-            {/*            style={{"color":"#ee6b6e"}}*/}
-            {/*            data={Data_Invalid}*/}
-            {/*            onEachFeature={OnEachCountryBuffer}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*    <LayersControl.Overlay name="Zone tampon à 2 Km">*/}
-            {/*        <GeoJSON*/}
-            {/*            style={{"color":"#fff"}}*/}
-            {/*            data={TAMPON}*/}
-            {/*            onEachFeature={OnEachCountryTampon}*/}
-            {/*        />*/}
-            {/*    </LayersControl.Overlay>*/}
-
-            {/*</LayersControl>*/}
             <GeoJSON
-
                 style={countryStyle}
                 data={limit_ci}
                 //onEachFeature={OnEachCountry}
-                />  
+            />  
             <MarkerClusterGroup chunkedLoading >
                         {allpoints.filter((point) => {
                             return search.toLowerCase() === ""
@@ -453,7 +398,6 @@ function CarteParcelle(){
                                             <b className='text-center'>CERTIFIE</b>
                                         </tr>
                                         }
-                                        
                                         <tr>
                                             <th scope="col" class="center">ID</th>
                                             <th scope="col" class="center">INFORMATIONS</th>
@@ -461,42 +405,47 @@ function CarteParcelle(){
                                     </thead>
                                     <tbody style={{"align-items": "center"}}>
                                         <tr>
-                                            <th scope="col"><b>CODE</b></th>
-                                            <td class="text-uppercase"><strong>{point.code}</strong></td>
+                                            <th scope="col"><b>{t("CODE")}</b></th>
+                                            <td class="text-uppercase">
+                                                {point.code_certif ? <strong>{point.code_certif} / {point.code}</strong> :
+                                                    <strong>{point.code}</strong>}
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <th scope="col"><b>PRODUCTEUR</b></th>
+                                            <th scope="col"><b>{t("PRODUCTEUR")}</b></th>
                                             <td class="text-uppercase"><strong>{point.producteur?.photo && <img src={point.producteur?.photo} width={30} className='rounded-circle'/> } {point.producteur?.nomComplet}</strong></td>
                                         </tr>
                                         <tr>
-                                            <th scope="col"><b>SECTION</b></th>
+                                            <th scope="col"><b>{t("SECTION")}</b></th>
                                             <td class="text-uppercase text-center"><strong>{point.producteur?.section?.libelle}</strong></td>
                                         </tr>
                                         <tr>
-                                            <th scope="col"><b>COORDONNEES</b></th>
+                                            <th scope="col"><b>{t("COORDONNEES")}</b></th>
                                             <td class="text-uppercase">({point.latitude},{point.longitude})</td>
                                         </tr>
-                                        
+
                                         <tr>
-                                            <th scope="col"><b>CULTURE</b></th>
+                                            <th scope="col"><b>{t("CULTURE")}</b></th>
                                             <td class="text-uppercase text-center">{point.culture?.libelle}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="col"><b>SUPERFICIE</b></th>
+                                            <th scope="col"><b>{t("SUPERFICIE")}</b></th>
                                             <td class="text-uppercase text-center">{point.superficie} (Ha)</td>
                                         </tr>
-                        
+
                                         <tr>
-                                            <th scope="col"><b>SUIVIS</b></th>
+                                            <th scope="col"><b>{t("PLANTING")}</b></th>
                                             <td class="text-uppercase text-center">
-                                                <button class="btn btn-default " style={{"padding": "1px 8px 1px 8px"}} title="voir"  onClick={()=>voirSuiviofParc(point.code,index)}><i class="fa-solid fa-eye text-primary "></i></button>
-                                                
+                                                <button class="btn btn-default " style={{"padding": "1px 8px 1px 8px"}}
+                                                        title="voir" onClick={() => voirSuiviofParc(point.code, index)}>
+                                                    <i class="fa-solid fa-eye text-primary "></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
                                     </table>
-                                
-                                
+
+
                                 </Popup>
 
                                     {/* modal */}
@@ -504,7 +453,7 @@ function CarteParcelle(){
                                         <div class="modal-dialog modal-md" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Liste plantings {point?.producteur?.nomComplet}</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel">{t("Liste plantings")} {point?.producteur?.nomComplet}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -514,13 +463,13 @@ function CarteParcelle(){
                                                     <table className="table fs--1 mb-0">
                                                         <thead>
                                                         <tr className="bg-warning">
-                                                            <th className="sort white-space-nowrap align-middle  text-uppercase mr-2" scope="col"  style={{"width":"10%"}}>Code</th>
-                                                            <th className="sort white-space-nowrap align-middle  text-uppercase mr-2" scope="col"  style={{"width":"10%"}}>Date</th>
-                                                            <th className="sort align-middle pe-3 text-uppercase" scope="col"  style={{"width":"15%"}}>Parcelle</th>
-                                                            <th className="sort align-middle pe-3 text-uppercase" scope="col"  style={{"width":"10%"}}>Especes</th>
-                                                            <th className="sort align-middle  text-uppercase text-center" scope="col"  style={{"width":"10%", "min-width":"50px"}}>Monitoring</th>
-                                                            <th className="sort align-middle pe-0 text-uppercase text-center" scope="col" style={{"width":"25%", "min-width":"100px"}}>Total Plantés</th>
-                                                            <th className="sort align-middle pe-0 text-uppercase text-center" scope="col" style={{"width":"15%", "min-width":"100px"}}>Action</th>
+                                                            <th className="sort white-space-nowrap align-middle  text-uppercase mr-2" scope="col"  style={{"width":"10%"}}>{t("Code")}</th>
+                                                            <th className="sort white-space-nowrap align-middle  text-uppercase mr-2" scope="col"  style={{"width":"10%"}}>{t("Date")}</th>
+                                                            <th className="sort align-middle pe-3 text-uppercase" scope="col"  style={{"width":"15%"}}>{t("Parcelle")}</th>
+                                                            <th className="sort align-middle pe-3 text-uppercase" scope="col"  style={{"width":"10%"}}>{t("Especes")}</th>
+                                                            <th className="sort align-middle  text-uppercase text-center" scope="col"  style={{"width":"10%", "min-width":"50px"}}>{t("Monitoring")}</th>
+                                                            <th className="sort align-middle pe-0 text-uppercase text-center" scope="col" style={{"width":"25%", "min-width":"100px"}}>{t("Total Plantés")}</th>
+                                                            <th className="sort align-middle pe-0 text-uppercase text-center" scope="col" style={{"width":"15%", "min-width":"100px"}}>{t("Action")}</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody className="list" id="all-email-table-body">
@@ -538,110 +487,35 @@ function CarteParcelle(){
                                                                 <td className="date align-middle white-space-nowrap text-900 py-2 text-center"><span className="text-success cursor-pointer">{planting.total_monitoring}</span></td>
                                                                 <td className="align-middle white-space-nowrap ps-3 text-center"><b>{planting.plant_recus}</b></td>
                                                                 <td className="status align-middle fw-semi-bold  py-2 text-center">
-                                                                
-                                                                <button className="btn btn-sm p-0" onClick={()=>DetailPlantModal(planting.code,index)}><i class="fa-solid fa-eye text-primary "></i></button>
-                                                               
+
+                                                                    <button className="btn btn-sm p-0"
+                                                                            onClick={() => DetailPlantModal(planting.code, index)}>
+                                                                        <i class="fa-solid fa-eye text-primary "></i>
+                                                                    </button>                                                                    
                                                                 </td>
                                                             </tr>
                                                             )
                                                             }
-                                                        </tbody> 
+                                                        </tbody>
                                                     </table>
-                                                    </div>
-                                                    {/*  <div className="row align-items-center justify-content-between py-2 pe-0 fs--1">
-                                                    <div className="col-auto d-flex">
-                                                        <p className="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900" data-list-info="data-list-info"></p><a className="fw-semi-bold" href="#!" data-list-view="*">View all<span className="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a className="fw-semi-bold d-none" href="#!" data-list-view="less">View Less<span className="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
-                                                    </div>
-                                                    <div className="col-auto d-flex"><button className="page-link" data-list-pagination="prev"><span className="fas fa-chevron-left"></span></button>
-                                                        <ul className="mb-0 pagination"></ul><button className="page-link pe-0" data-list-pagination="next"><span className="fas fa-chevron-right"></span></button>
-                                                    </div>
-                                                    </div> */}
+                                                    </div>                                        
                                                 </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{t("Fermer")}</button>
                                             </div>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                             </Marker>
                         )
                         }
                         })}
-                    </MarkerClusterGroup> 
+                    </MarkerClusterGroup>
                 {kmlData && <MarkerClusterGroup chunkedLoading ><GeoJSON data={kmlData}  /></MarkerClusterGroup> }
 
         </MapContainer>
-            {/*<div className="legend" style={{listStyle: null, marginBottom: "10px"}}>*/}
-            {/*    <h4 style={{marginTop: "5px"}}>STATUT FONCIER</h4>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="superawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#FFFF00"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Agroforêt</i></span></div>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="awesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#18bd38"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Forêt classée</i></span></div>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#95A595"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Parc & réserve</i></span></div>*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#a20317"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque élevé</i></span></div>*!/*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#D56E1B"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque modéré</i></span></div>*!/*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#fff"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque zéro</i></span></div>*!/*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#ee6b6e"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Données invalides</i></span></div>*!/*/}
-            {/*    /!*<li style={{float: "left", marginRight: "10px"}}><span className="notawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "12px", height: "12px", margin: "2px", backgroundColor: "#000000"}}></span> Not Awesome</li>*!/*/}
-            {/*</div>*/}
-            {/*<br/>*/}
-            {/*<div className="legend" style={{listStyle: null, marginTop: "10px"}}>*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="superawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#FFFF00"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Agroforêt</i></span></div>*!/*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="awesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#18bd38"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Forêt classée</i></span></div>*!/*/}
-            {/*    /!*<div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "40px", height: "22px", margin: "2px", backgroundColor: "#95A595"}}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Parc & réserve</i></span></div>*!/*/}
-            {/*    <h4 style={{marginTop: "10px"}}>NIVEAU DE RISQUE</h4>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{*/}
-            {/*        border: "1px",*/}
-            {/*        solid: "#ccc",*/}
-            {/*        float: "left",*/}
-            {/*        width: "40px",*/}
-            {/*        height: "22px",*/}
-            {/*        margin: "2px",*/}
-            {/*        backgroundColor: "#ee6b6e"*/}
-            {/*    }}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Données invalides</i></span></div>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{*/}
-            {/*        border: "1px",*/}
-            {/*        solid: "#ccc",*/}
-            {/*        float: "left",*/}
-            {/*        width: "40px",*/}
-            {/*        height: "22px",*/}
-            {/*        margin: "2px",*/}
-            {/*        backgroundColor: "#fff"*/}
-            {/*    }}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque zéro</i></span></div>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{*/}
-            {/*        border: "1px",*/}
-            {/*        solid: "#ccc",*/}
-            {/*        float: "left",*/}
-            {/*        width: "40px",*/}
-            {/*        height: "22px",*/}
-            {/*        margin: "2px",*/}
-            {/*        backgroundColor: "#D56E1B"*/}
-            {/*    }}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque modéré</i></span></div>*/}
-            {/*    <div style={{float: "left", marginRight: "10px"}}><span className="kindaawesome" style={{*/}
-            {/*        border: "1px",*/}
-            {/*        solid: "#ccc",*/}
-            {/*        float: "left",*/}
-            {/*        width: "40px",*/}
-            {/*        height: "22px",*/}
-            {/*        margin: "2px",*/}
-            {/*        backgroundColor: "#a20317"*/}
-            {/*    }}></span> <span style={{fontWeight: "bold", fontSize: "20px"}}><i> Risque élevé</i></span></div>*/}
-            {/*    /!*<li style={{float: "left", marginRight: "10px"}}><span className="notawesome" style={{border: "1px", solid: "#ccc", float: "left", width: "12px", height: "12px", margin: "2px", backgroundColor: "#000000"}}></span> Not Awesome</li>*!/*/}
-            {/*</div>*/}
-            {/*<br/>*/}
-            {/*<br/>*/}
-            {/*<div>*/}
-            {/*    <ul style={{marginTop: "-10px"}}>*/}
-            {/*        <li>Parcelles à Risque Elevé : Ensemble des parcelles qui chevauchent d'une Forêt classée / Parc &*/}
-            {/*            Réserve*/}
-            {/*        </li>*/}
-            {/*        <li>Parcelles à Risque Modéré : Ensemble des parcelles situé à moins de 2 Km d'une forêt classée /*/}
-            {/*            parc & réserve*/}
-            {/*        </li>*/}
-            {/*        <li>Parcelles à Risque zéro : Ensemble des parcelles situé à plus de 2 Km d'une forêt classée / parc & réserve</li>*/}
-            {/*        <li>Données Invalides : Ensemble des parcelles ayant des irrégularités de polygones et de positionnement</li>*/}
-            {/*    </ul>*/}
-            {/*</div>*/}
         </div>
         </div>
         </main>
@@ -656,30 +530,29 @@ function CarteParcelle(){
         <div className="modal-header px-card border-bottom ">
             <div className="w-100 d-flex justify-content-between align-items-start">
             <div>
-                <h5 className="mb-0 lh-sm text-1000">Les details du planting {idIndex.code} </h5>
+                <h5 className="mb-0 lh-sm text-1000">{t("Les details du planting")} {idIndex.code} </h5>
             </div>
-            <button className="btn p-2 fs--2 text-900 text-danger" type="button" data-bs-dismiss="modal" aria-label="Close">Fermer </button>
+            <button className="btn p-2 fs--2 text-900 text-danger" type="button" data-bs-dismiss="modal" aria-label="Close">{t("Fermer")} </button>
             </div>
         </div>
             <div class="panel-body">
                 <fieldset>
                     <legend class=" mb-2 mt-3 card mr-2 bg-success p-2 text-dark bg-opacity-25" style={{"margin-bottom": "0px"}}>
-                    Liste epèces plantés
-
+                        {t("Liste des espèces reçues et plantés")}
                     </legend>
                 <table id="emptbl" class="table table-bordered border-primary ">
                     <thead class="table-dark ">
                         <tr>
-                            <th className="text-center" style={{"width":"45%"}}>Espece</th>
-                            <th className="text-center" style={{"width":"15%"}}>Plants recus</th>
-                            <th className="text-center" style={{"width":"15%"}}>Carbone stocké</th>
+                            <th className="text-center" style={{"width":"45%"}}>{t("Espèce")}</th>
+                            <th className="text-center" style={{"width":"15%"}}>{t("Plants reçus")}</th>
+                            {/*<th className="text-center" style={{"width":"15%"}}>Carbone stocké</th>*/}
                         </tr>
                     </thead>
                     <tbody>
                     
                     {
                     detailPlantingList.map((plant,index)=>
-                    <tr >
+                    <tr>
                         <td className="text-center">
                             
                         <b>{plant.espece?.libelle}({plant.espece?.accronyme})</b>
@@ -688,9 +561,9 @@ function CarteParcelle(){
                             <b className="text-warning">{plant.plants}</b>
                         </td>
 
-                        <td  className="text-center">
-                            <b className="text-success">0</b>
-                        </td>
+                        {/*<td  className="text-center">*/}
+                        {/*    <b className="text-success">0</b>*/}
+                        {/*</td>*/}
                     </tr>
                     )
                     }
